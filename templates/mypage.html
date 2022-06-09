@@ -1,0 +1,240 @@
+{% extends 'layout.html' %}
+{% block content %}
+<section id="article-profile">
+<div class="space-between">
+    <!-- //프로필 -->
+    <div id="article-profile-image">
+        <img alt="{{ user.userid }}" src="/static/image/usericon.png" style="width:100px; height:100px;"  ><br><br>
+        <div id="nickname">{{ user.userid }}</div><br>
+        <div>
+            {% if session['userid'] == user.userid %}
+            <!--
+            <input type="button" style="width:100pt; height:40pt;" value="회원 정보 수정" onclick="location.href='Following.html'">
+            -->
+            <button style="width:100pt; height:40pt;" data-bs-toggle="modal" data-bs-target="#staticBackdrop">팔로우목록</button>
+            <a href="{{ url_for('account.logout') }}"><button style="width:100pt; height:40pt; border:1px solid red; color: red;">로그아웃</button></a>
+            {% else %}
+            <!-- 팔로우 버튼-->
+            {% if is_follow %}
+            <button style="width:100pt; height:40pt;" onclick="follow(this)">팔로우취소</button>
+            {% else %}
+            <button style="width:100pt; height:40pt;" onclick="follow(this)">팔로우</button>
+            {% endif %}
+            {% endif %}
+        </div><br><br>
+    </div>
+    <!-- //프로필 -->
+    <!-- 내가 올린 상품 -->
+    <h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ user.userid }} 님의 상품</h2>
+    <hr>
+    {% if products|length == 0 %}
+    <h4 color="#898e96" align="center">등록한 상품이 없습니다.</h4>
+    {% else %}
+    <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-3">
+          {% for product in products %}
+          <!-- 제품 -->
+          <div class="col">
+              <div class="shadow-sm">
+                  <!-- 제품 사진 -->
+                  {% if product.images|length == 0 %}
+                  <img class="bd-placeholder-img card-img-top" width="100%" height="225px"  alt="static/image/usericon.png" src="/static/image/no_image.jpg"  preserveAspectRatio="xMidYMid slice" focusable="false">
+                  {% else %}
+                  <img class="bd-placeholder-img card-img-top" width="100%" height="225px"  alt="static/image/usericon.png" src="/{{ product.images[0].file_path }}"  preserveAspectRatio="xMidYMid slice" focusable="false">
+                  {% endif %}
+                  <!--//제품사진-->
+                  <!--제품정보-->
+                  <div class="card-body">
+                      <h4 class="product-title" style="word-break: inherit;">
+                          {% if product.is_sold == 1 %}
+                          <span class="badge bg-secondary" style="vertical-align: middle; font-size: 50%;">판매완료</span>
+                          {% endif %}
+                          {{ product.keyword }}
+                      </h4>
+                      <h5 class="product-price" style="margin: 20px 0; overflow:hidden;">{{ product.price }}원</h5>
+                      <div class="d-flex justify-content-between align-items-center">
+                          <div class="btn-group" style="width:100%;">
+                              <a href="{{ url_for('detail', id=product.id) }}" type="button" style="display:block; width:100%;">
+                                  <button type="button" class="btn btn-sm btn-outline-secondary" style="width: 100%;">상세보기</button>
+                              </a>
+                          </div>
+                      </div>
+                  </div>
+                  <!--//제품정보-->
+              </div>
+        </div>
+        <!-- //제품 -->
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    <!-- //내가 올린 상품 -->
+    <br><br><br><br><br>
+
+    <!-- 팔로우한 사람들의 상품 -->
+    <h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;팔로잉들의 상품</h2>
+    <hr>
+    {% if follow_products|length == 0 %}
+    <h4 color="#898e96" align="center">등록된 상품이 없습니다.</h4>
+    {% else %}
+    <div class="container">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-3">
+            {% for product in follow_products %}
+            <!-- 제품 -->
+            <div class="col">
+                <div class="shadow-sm">
+                <!-- 제품 사진 -->
+                {% if product.images|length == 0 %}
+                <img class="bd-placeholder-img card-img-top" width="100%" height="225px"  alt="static/image/usericon.png" src="/static/image/no_image.jpg"  preserveAspectRatio="xMidYMid slice" focusable="false">
+                {% else %}
+                <img class="bd-placeholder-img card-img-top" width="100%" height="225px"  alt="static/image/usericon.png" src="/{{ product.images[0].file_path }}"  preserveAspectRatio="xMidYMid slice" focusable="false">
+                {% endif %}
+                <!-- //제품 사진 -->
+                
+                <!-- 제품 정보 -->
+                <div class="card-body">
+                    <h4 class="product-title" style="word-break: inherit;">
+                        {% if product.is_sold == 1 %}
+                        <span class="badge bg-secondary" style="vertical-align: middle; font-size: 50%;">판매완료</span>
+                        {% endif %}
+                        {{ product.keyword }}
+                    </h4>
+                    <h5 class="product-price" style="margin: 20px 0; overflow:hidden;">{{ product.price }}원</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group" style="width:100%;">
+                            <a href="{{ url_for('detail', id=product.id) }}" type="button" style="display:block; width:100%;">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" style="width: 100%;">상세보기</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- //제품 정보 -->
+              </div>
+            </div>
+            <!-- //제품 -->
+            {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    <!--//팔로우한 사람들의 상품-->
+    <br><br>
+</div>
+</section>
+
+<!-- 내가 팔로우한 사람들 Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">팔로잉 목록</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group list-group-flush">
+          {% for user in followerlist %}
+          <li class="list-group-item">
+            <img alt="{{ user.userid }}" src="/static/image/usericon.png" style="width:50px; height:50px; margin-right: 20px;">
+            {{ user.userid }}
+            <a href="{{ url_for('account.mypage', userid=user.userid) }}" style="float:right;"><button type="button" class="btn btn-outline-secondary">프로필</button></a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function follow(object){
+  axios.get("/account/follow/{{user.userid}}")
+  .then((res) => {
+    console.log(res.data)
+    // 메세지 없음 -> 팔로우 된거
+    if(res.data.message == ""){
+        if (res.data.is_follow){
+          object.innerText = "팔로우 취소"
+          
+        } else {
+          object.innerText = "팔로우"
+        }
+    } else {
+      alert(res.data.message)
+    }
+  })
+}
+function followlist(object){
+  axios.get("/account/followlist/{{user.userid}}")
+  .then((res) => {
+    console.log(res.data)
+  })
+  .catch((err)=>{console.log(err)})
+}
+</script>
+<style>
+h2{text-align: left;}
+
+h1, p {
+  margin: 0;
+}
+
+main {
+  padding: 1rem;
+  height: 100%;
+}
+
+
+* {
+  box-sizing: border-box;
+}
+.product-title{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.product-items{
+  width: 140px;
+}
+.btn{
+  width:140px;
+}
+.caption {
+  margin-top: 0px;
+  text-align: center;
+}
+
+.caption a {
+  margin: 0 20px;
+  font-size: 15px;
+  color: blue;
+  text-decoration: none;
+}
+#article-profile-image{
+  margin: 50px 0px;
+  text-align: center;
+
+}
+#nickname{
+  text-align: center;
+}
+
+
+.imgtext {
+		display: block;
+		vertical-align: bottom;
+		/*영역 설정*/
+		width: 202px;
+		height: 202px;
+		/*div 안에서 가운데 정렬 해주기 위해!*/
+		text-align: center;
+		/*div를 가운데 정렬 해주기 위해*/
+		margin-top: 20px;
+		margin-left: 30px;
+		margin-right: 50px;
+		/*영역을 보여드리기 위해 테두리 삽입!*/
+		border: 1px solid black;
+
+	}
+
+
+</style>
+{% endblock %}

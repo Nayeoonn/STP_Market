@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+{% block title %} 제품 리스트 {% endblock %}
+{% block content %}
+<!--222Header start222222-->
+<div class="p-5 text-center mb-0" stlye="background-color: #EEE;">
+  <h1>STP 마켓</h1>
+  <p>소공동 중고거래</p>
+</div>
+<hr>
+{% if products|length == 0 %}
+<h4 color="#898e96" align="center">등록된 상품이 없습니다.</h4>
+{% else %}
+<div class="container">
+
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-3">
+    {% for product in products %}
+    <div class="col">
+      <div class="shadow-sm">
+        <!-- 제품 사진 -->
+        {% if product.images|length == 0 %}
+        <img class="bd-placeholder-img card-img-top" width="100%" height="225px"  alt="static/image/usericon.png" src="static/image/no_image.jpg"  preserveAspectRatio="xMidYMid slice" focusable="false">
+        {% else %}
+        <img class="bd-placeholder-img card-img-top" width="100%" height="225px"  alt="static/image/usericon.png" src="{{ product.images[0].file_path }}"  preserveAspectRatio="xMidYMid slice" focusable="false">
+      {% endif %}
+
+        <div class="card-body">
+          <h4 class="product-title" style="word-break: inherit;">
+            {% if product.is_sold == 1 %}
+            <span class="badge bg-secondary" style="vertical-align: middle; font-size: 50%;">판매완료</span>
+            {% endif %}
+            {{ product.keyword }}
+          </h4>
+          <h5 class="product-price" style="margin: 20px 0; overflow:hidden;">{{ product.price }}원</h5>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="btn-group" style="width:100%;">
+              <a href="{{ url_for('detail', id=product.id) }}" type="button" style="display:block; width:100%;">
+                <button type="button" class="btn btn-sm btn-outline-secondary" style="width: 100%;">상세보기</button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    
+
+  </div>
+</div>
+{% endif %}
+
+
+<style>
+  .product-title{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .product-items{
+    width: 140px;
+  }
+  .btn{
+    width:140px;
+  }
+</style>
+{% endblock %}
